@@ -1,8 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
 <form class="form-config" method="POST">
-    <button id="lock" type="button">Lock</button>
-    <button id="unlock" type="button">Unlock</button>
+    <button id="lock" formaction="/lock" type="submit" {% if lock.is_locked() %} disabled {% endif %} >Lock</button>
+    <button id="unlock" formaction="/unlock" type="submit" {% if not lock.is_locked() %} disabled {% endif %}>Unlock</button>
 </form>
+
 {% endblock %}
 

@@ -1,8 +1,14 @@
+ #!/usr/bin/python3
+
 from flask import Flask, flash, redirect, render_template, json, \
         request, url_for
 from werkzeug import generate_password_hash, check_password_hash
 import flask_login
 from flask_login import login_required
+
+from contextlib import closing
+from db import db, lock_state
+
 
 app = Flask(__name__)
 app.secret_key = 'foobar'
@@ -71,15 +77,40 @@ def logout():
 @app.route("/config")
 @login_required
 def config_form():
-    # TODO check authorization
-    return render_template("config_form.html")
+    return render_template("config_form.html", lock=lock_state)
 
 @app.route("/config", methods=["POST"])
 @login_required
 def save_config():
-    return render_template("config_form.html")
+    return render_template("config_form.html", lock=lock_state)
+
+@app.route("/lock", methods=["POST"])
+@login_required
+def lock():
+    if lock_state.is_locked():
+        lock_state.sync()
+        flash("Already locked")
+    else:
+        lock_state.lock(flask_login.current_user.user_id)
     
+    db.sync()
+
+    return redirect("/config")
+
+@app.route("/unlock", methods=["POST"])
+@login_required
+def unlock():
+    if not lock_state.is_locked():
+        lock_state.sync()
+        flash("Already unlocked")
+    else:
+        lock_state.unlock(flask_login.current_user.user_id)
+
+    db.sync()
+
+    return redirect("/config")
 
 if __name__ == "__main__":
-    app.run()
+    with closing(db):
+        app.run()
 
