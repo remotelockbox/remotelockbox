@@ -1,6 +1,6 @@
 # Remote Lock Box
 
-A web-server that is can control an electronic lockbox.
+A web-server that controls an electronic lockbox.
 It is meant to be installed securely on an embedded computer inside the box.
 
 # Running
@@ -25,6 +25,10 @@ When first installed, these are the default PINs:
 
     Primary - 1234
     Sub     - 0000
+
+If you change your PIN and forget it, reset all the settings by
+deleting `lock-settings.db`. Depending on how you access the files,
+that may require physical access inside the lock box. So be careful!
 
 # Development
 
