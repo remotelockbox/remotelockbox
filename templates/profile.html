@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% block body %}
+    <form class="form-horizontal" method="POST" autocomplete="new-password">
+		<div class="row">
+			<div class="col-md-3"></div>
+			<div class="col-md-6">
+				<h3>Update your PIN</h3>
+				<hr>
+			</div>
+		</div>
+
+		{% if error %}
+		<div class="row">
+			<div class="col-md-3"></div>
+			<div class="col-md-6">
+				<div class="alert alert-danger">{{ error }}</div>
+			</div>
+		</div>
+		{% endif %}
+
+		<div class="row">
+			<div class="col-md-3"></div>
+			<div class="col-md-6">
+				<label for="inputPassword" class="sr-only">PIN</label>
+				<input type="password" name="oldPin" id="oldPin" inputmode="numeric" placeholder="Current PIN" required>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-3"></div>
+			<div class="col-md-6">
+				<label for="inputPassword" class="sr-only">PIN</label>
+				<input type="password" name="newPin" id="newPin" inputmode="numeric" placeholder="New PIN" required>
+			</div>
+		</div>
+		<div class="row" style="padding-top: 1rem">
+			<div class="col-md-3"></div>
+			<div class="col-md-6">
+				<button type="submit" class="btn btn-primary"><i class="fa fa-sign-in"></i>Update</button>
+			</div>
+		</div>
+    </form>
+</div>
+
+{% endblock %}
+

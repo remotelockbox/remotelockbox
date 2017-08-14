@@ -52,7 +52,10 @@ def load_user(user_id):
 
 @app.route("/")
 def main():
-    return render_template("index.html")
+    if not flask_login.current_user.is_authenticated:
+        return render_template("index.html")
+    else:
+        return redirect("/config")
 
 @app.route("/", methods=["POST"])
 def login():
@@ -109,6 +112,29 @@ def unlock():
     db.sync()
 
     return redirect("/config")
+
+@app.route("/profile")
+@login_required
+def show_profile():
+    return render_template("profile.html")
+
+@app.route("/profile", methods=["POST"])
+@login_required
+def save_profile():
+    error = None
+    old_pin = request.form['oldPin']
+    new_pin = request.form['newPin']
+
+    if old_pin and new_pin:
+        if check_password_hash(app.secret_pin, old_pin):
+            app.secret_pin = generate_password_hash(new_pin)
+            flash("PIN changed")
+        else:
+            error = "PIN Invalid"
+    else:
+        error = "You must fill in the old and new PIN"
+
+    return render_template("profile.html", error=error)
 
 if __name__ == "__main__":
     with closing(db):
