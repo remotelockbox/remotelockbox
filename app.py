@@ -53,7 +53,8 @@ def login():
     pin = request.form['inputPassword']
     if pin:
         if check_password_hash(app.secret_pin, pin):
-            flask_login.login_user(User.get('primary'))
+            remember = 'remember' in request.form
+            flask_login.login_user(User.get('primary'), remember=remember)
             return redirect("/config")
         else:
             error = "PIN Invalid"
