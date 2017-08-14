@@ -2,35 +2,27 @@
 
 from flask import Flask, flash, redirect, render_template, json, \
         request, url_for
-from werkzeug import generate_password_hash, check_password_hash
 import flask_login
 from flask_login import login_required
 
 from contextlib import closing
-from db import db, lock_state
+from db import db, lock_state, get_user, users
 
 
 app = Flask(__name__)
 app.secret_key = 'foobar'
-app.secret_pin = generate_password_hash('1234')
-
 
 # Log in and User logic
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
 class User:
-
     @staticmethod
     def get(user_id):
-        if user_id == 'primary':
-            return User(user_id, 'primary')
-        else:
-            return User(user_id, 'sub')
+        return User(user_id)
 
-    def __init__(self, user_id, role):
+    def __init__(self, user_id):
         self.user_id = user_id
-        self.role = role
 
     def is_authenticated(self):
         return True
@@ -61,10 +53,11 @@ def main():
 def login():
     pin = request.form['inputPassword']
     if pin:
-        if check_password_hash(app.secret_pin, pin):
-            remember = 'remember' in request.form
-            flask_login.login_user(User.get('primary'), remember=remember)
-            return redirect("/config")
+        for user in users:
+            if user.check_pin(pin):
+                remember = 'remember' in request.form
+                flask_login.login_user(User.get(user.id), remember=remember)
+                return redirect("/config")
         else:
             error = "PIN Invalid"
     else:
@@ -94,7 +87,7 @@ def lock():
         lock_state.sync()
         flash("Already locked")
     else:
-        lock_state.lock(flask_login.current_user.user_id)
+        lock_state.lock(flask_login.current_user.get_id())
     
     db.sync()
 
@@ -107,7 +100,7 @@ def unlock():
         lock_state.sync()
         flash("Already unlocked")
     else:
-        lock_state.unlock(flask_login.current_user.user_id)
+        lock_state.unlock(flask_login.current_user.get_id())
 
     db.sync()
 
@@ -126,8 +119,9 @@ def save_profile():
     new_pin = request.form['newPin']
 
     if old_pin and new_pin:
-        if check_password_hash(app.secret_pin, old_pin):
-            app.secret_pin = generate_password_hash(new_pin)
+        user = get_user(flask_login.current_user.get_id())
+        if user.check_pin(old_pin):
+            user.set_pin(new_pin)
             flash("PIN changed")
         else:
             error = "PIN Invalid"
