@@ -28,12 +28,9 @@ if use_gpio:
 class SolenoidSwitch:
     def __init__(self, closed=True):
         self.closed = closed
-        self.last_open = 0
 
     def open(self):
         print("solenoid opened")
-        if self.closed:
-            self.last_open = time.time()
         if use_gpio:
             _relay.on()
         self.closed = False

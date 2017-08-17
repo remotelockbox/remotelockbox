@@ -1,11 +1,13 @@
  #!/usr/bin/python3
 
+from contextlib import closing
+import datetime
+
 from flask import Flask, flash, redirect, render_template, json, \
         request, url_for
 import flask_login
 from flask_login import login_required
 
-from contextlib import closing
 from db import db, lock_state, get_user, users
 
 
@@ -73,7 +75,7 @@ def logout():
 @app.route("/config")
 @login_required
 def config_form():
-    return render_template("config_form.html", lock=lock_state)
+    return render_template("config_form.html", now=datetime.datetime.now(), lock=lock_state)
 
 @app.route("/config", methods=["POST"])
 @login_required

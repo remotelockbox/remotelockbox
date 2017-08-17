@@ -1,4 +1,5 @@
 
+import datetime
 import shelve
 from os import path
 
@@ -10,9 +11,11 @@ class LockState:
     def __init__(self):
         self.solenoid = hardware.SolenoidSwitch()
         self.last_locked_by = None
+        self.last_locked = datetime.datetime.now()
 
     def lock(self, user_id):
         self.solenoid.open()
+        self.last_locked = datetime.datetime.now()
         self.last_locked_by = user_id
 
     def unlock(self, user_id):
