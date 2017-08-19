@@ -8,6 +8,7 @@ from flask import Flask, flash, redirect, render_template, json, \
 import flask_login
 from flask_login import login_required
 
+import forms
 from db import db, lock_state, get_user, users
 
 
@@ -74,13 +75,22 @@ def logout():
 
 @app.route("/config")
 @login_required
-def config_form():
-    return render_template("config_form.html", now=datetime.datetime.now(), lock=lock_state)
+def show_config():
+    form_data = None
+    if 'schedule' in db:
+        form_data = db['schedule']
+
+    return render_template("config_form.html",
+        now=datetime.datetime.now(),
+        lock=lock_state,
+        schedule_form = forms.ScheduleForm(form_data)
+    )
 
 @app.route("/config", methods=["POST"])
 @login_required
 def save_config():
-    return render_template("config_form.html", lock=lock_state)
+    db['schedule'] = request.form
+    return show_config()
 
 @app.route("/lock", methods=["POST"])
 @login_required
