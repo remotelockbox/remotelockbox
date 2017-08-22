@@ -23,29 +23,33 @@
     <div class="card-body">
         <h4 class="card-title">Scheduled Unlock</h4>
         <p class="card-text">
-            These settings control when the box will be unlocked.
+            Set a scheduled unlock time and lock the box.
         </p>
         <h6 class="card-subtitle mb-2 mt-3 text-muted">Date</h6>
         {% from "_form_helpers.html" import render_field %}
         <form class="form-schedule" method="POST">
         <div class="form-row">
             <div class="form-group">
-                {{ schedule_form.unlock_date(class='form_control') }}
+                {{ schedule_form.unlock_date(class='form_control', placeholder='Choose date') }}
             </div>
         </div>
         <p>
-            <input type="submit" value="Set">
+            <input type="submit" value="Lock">
             <input type="submit" id="clear_schedule" value="Clear">
         </p>
         <script>
-                jQuery('#unlock_date').datetimepicker({
-                    format:'Y-m-d H:00',
-                    minDate: new Date(),
-                    inline: false,
-                    lang:'en'
-                    });
+            flatpickr("#unlock_date", {
+                enableTime: true,
+                minDate: "today",
+                time_24hr: true,
+                inline: true,
+                altInput: true,
+                altFormat: 'Y-m-d H:i',
+                allowInput: true,
+                minuteIncrement: 1
+            });
 
-                jQuery('#clear_schedule').click(function(e) { jQuery("#unlock_date").val(""); });
+            jQuery('#clear_schedule').click(function(e) { jQuery("#unlock_date").val(""); });
         </script>
         </form>
     </div>
