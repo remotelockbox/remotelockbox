@@ -52,7 +52,7 @@ def get_user(id):
             return user
 
 # Open database
-db = shelve.open('lock-settings.db', writeback=True)
+db = shelve.open('lock-settings', writeback=True)
 
 # Populate database if it is empty
 db.setdefault('lock_state', LockState())

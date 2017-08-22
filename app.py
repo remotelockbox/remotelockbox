@@ -90,6 +90,7 @@ def show_config():
 @login_required
 def save_config():
     db['schedule'] = request.form
+    db.sync()
     return show_config()
 
 @app.route("/lock", methods=["POST"])
