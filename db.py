@@ -1,5 +1,6 @@
 
 import datetime
+import logging
 import shelve
 from os import path
 
@@ -17,10 +18,12 @@ class LockState:
         self.solenoid.open()
         self.last_locked = datetime.datetime.now()
         self.last_locked_by = user_id
+        logging.info('locked by %s', self.last_locked_by)
 
     def unlock(self, user_id):
         self.solenoid.close()
         self.last_locked_by = user_id
+        logging.info('unlocked by %s (last locked on %s)', self.last_locked_by, self.last_locked)
     
     def is_locked(self):
         return not self.solenoid.is_closed()
@@ -33,6 +36,7 @@ class LockState:
             self.solenoid.close()
         else:
             self.solenoid.open()
+        logging.info('syncing solenoid state (closed=%s)', self.solenoid.closed)
 
 class User:
     def __init__(self, id, pin=None):

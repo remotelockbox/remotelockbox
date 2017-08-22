@@ -2,15 +2,16 @@
 
 from contextlib import closing
 import datetime
+import logging
 
 from flask import Flask, flash, redirect, render_template, json, \
         request, url_for
 import flask_login
 from flask_login import login_required
 
-import forms
 from db import db, lock_state, get_user, users
-
+import forms
+import worker
 
 app = Flask(__name__)
 app.secret_key = 'foobar'
@@ -80,8 +81,8 @@ def logout():
 @login_required
 def show_config():
     form_data = None
-    if 'schedule' in db:
-        form_data = db['schedule']
+    if 'schedule_form' in db:
+        form_data = db['schedule_form']
 
     return render_template("config_form.html",
         now=datetime.datetime.now(),
@@ -92,8 +93,20 @@ def show_config():
 @app.route("/config", methods=["POST"])
 @login_required
 def save_config():
-    db['schedule'] = request.form
+    try:
+        if current_user_id() != 'primary' and 'schedule_form' in db:
+           flash("You can't change the schedule once it is set")
+           return show_config()
+    except KeyError:
+        pass
+
+    if request.form['unlock_date'] != '':
+        lock_state.lock(current_user_id())
+
+    db['schedule_form'] = request.form
+    db['schedule_user_id'] = current_user_id()
     db.sync()
+    logging.info('schedule updated to %s', list(db['schedule_form'].items()))
     return show_config()
 
 @app.route("/lock", methods=["POST"])
@@ -147,6 +160,11 @@ def save_profile():
     return render_template("profile.html", error=error)
 
 if __name__ == "__main__":
+    loglevel = logging.DEBUG if app.debug else logging.WARN
+    logging.basicConfig(format='%(asctime)s %(message)s', level=loglevel)
     with closing(db):
-        app.run()
-
+        try:
+            worker.start()
+            app.run()
+        finally:
+            worker.stop()
