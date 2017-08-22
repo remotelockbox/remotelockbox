@@ -3,13 +3,20 @@
 A web-server that controls an electronic lockbox.
 It is meant to be installed securely on an embedded computer inside the box.
 
-## Running
+## Installation
+
+### Setting up your system
+
+Set your time-zone by running `dpkg-reconfigure tzdata`.
 
 Install `python3` and `pip3`. On debian, raspbian, or ubuntu,
 run `apt install python3 python3-pip`.
 
-Then execute `pip3 install -r requirements.txt` to install libraries
-required by this program.
+Execute `pip3 install -r requirements.txt` to install libraries
+required by this program. If `pip3` cannot be found,
+it may be called something similar like `pip-3.5`.
+
+### Running the server
 
 Run the program by executing `./run`.
 
@@ -18,8 +25,8 @@ A database called `lock-settings.db` will be created in the current directory.
 The lock box supports up to two users. The primary user has full control
 of the box at all times. The secondary user (the 'sub' user), can control
 the box only when the primary user has unlocked the box. The sub can
-lock it themselves but cannot unlock it once it has been locked by the
-primary account holder.
+lock it themselves and can set a scheduled unlock but cannot
+manually unlock it.
 
 When first installed, these are the default PINs:
 
@@ -28,12 +35,14 @@ When first installed, these are the default PINs:
 
 If you change your PIN and forget it, reset all the settings by
 deleting `lock-settings.db`. Depending on how you access the files,
-that may require physical access inside the lock box. So be careful!
+that may require physical access inside the lock box. Be careful!
 
 ## Development
 
-During development, run the `./debug` script to start in debug mode. The server
-will automatically restart when files change.
+During development, run the `./debug` script to start in debug mode.
+The server will automatically restart when files change.
+
+The `debug` script does not operate your hardware by default.
 
 ## Design
 
