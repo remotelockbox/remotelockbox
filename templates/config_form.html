@@ -38,9 +38,12 @@
             <input type="submit" id="clear_schedule" value="Clear">
         </p>
         <script>
+            var now = new Date();
             flatpickr("#unlock_date", {
                 enableTime: true,
                 minDate: "today",
+                defaultHour: now.getHours(),
+                defaultMinute: now.getMinutes(),
                 time_24hr: true,
                 inline: true,
                 altInput: true,
