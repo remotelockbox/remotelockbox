@@ -19,6 +19,9 @@ app.secret_key = 'foobar'
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
+def current_user_id():
+     return flask_login.current_user.get_id()
+
 class User:
     @staticmethod
     def get(user_id):
@@ -100,7 +103,7 @@ def lock():
         lock_state.sync()
         flash("Already locked")
     else:
-        lock_state.lock(flask_login.current_user.get_id())
+        lock_state.lock(current_user_id())
     
     db.sync()
 
@@ -113,7 +116,7 @@ def unlock():
         lock_state.sync()
         flash("Already unlocked")
     else:
-        lock_state.unlock(flask_login.current_user.get_id())
+        lock_state.unlock(current_user_id())
 
     db.sync()
 
@@ -132,7 +135,7 @@ def save_profile():
     new_pin = request.form['newPin']
 
     if old_pin and new_pin:
-        user = get_user(flask_login.current_user.get_id())
+        user = get_user(current_user_id())
         if user.check_pin(old_pin):
             user.set_pin(new_pin)
             flash("PIN changed")
