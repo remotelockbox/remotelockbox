@@ -13,8 +13,14 @@ Install `python3` and `pip3`. On debian, raspbian, or ubuntu,
 run `apt install python3 python3-pip`.
 
 Execute `pip3 install -r requirements.txt` to install libraries
-required by this program. If `pip3` cannot be found,
-it may be called something similar like `pip-3.5`.
+required by this program.
+
+Allow access to GPIO pins:
+
+```
+sudo chown root.gpio /dev/gpiomem
+sudo chmod g+rw /dev/gpiomem
+```
 
 ### Running the server
 
@@ -64,24 +70,37 @@ You may also need miscellaneous items for interacting with the computer during
 setup (keyboard, monitor, sd-card reader, etc.).
 
 Purchase or build a relay circuit.
-There is an inexpensive kit that requires assembly and soldering at [Sparkfun](https://www.sparkfun.com/products/13815).
+There is an inexpensive kit that requires assembly and soldering at
+[Sparkfun](https://www.sparkfun.com/products/13815).
 
-Search for a "Digital Electronic Safe Box" on Amazon or Ebay. You will notice that most of them have the same controls on the front. You want any one of these.
+Search for a "Digital Electronic Safe Box" on Amazon or Ebay. You will notice
+that most of them have the same controls on the front. You want any one of
+these.
 
 #### Installation Steps
 
-Set a very short and simple PIN on the keypad. Since the keypad only works when this software allows it, you need it to be convenient, not secure.
+Set a very short and simple PIN on the keypad. Since the keypad only works when
+this software allows it, you need it to be convenient, not secure.
 
-On the inside of the door, unscrew the panel that contains the electronics and hardware. You need to cut one wire going from the control board to the solenoid that controls the lock.
-Connect the relay to each end of the cut wire so the relay is between the solenoid and the control board.
+On the inside of the door, unscrew the panel that contains the electronics and
+hardware. You need to cut one wire going from the control board to the solenoid
+that controls the lock.
+
+Connect the relay to each end of the cut wire so the relay is between the
+solenoid and the control board.
 
 Now connect the relay's 5v control pins to your raspberry pi.
 
-Load this software onto the raspberry pi and run it. Test that it is accessible over your WiFi network (or plug it in via Ethernet if needed).
+Load this software onto the raspberry pi and run it. Test that it is accessible
+over your WiFi network (or plug it in via Ethernet if needed).
 
-If your raspberry pi requires wired power, thread the power cable through one of the mounting holes in the back of the case. This may require drilling a wider hole or cutting the connector off your cable and and splicing it back on.
+If your raspberry pi requires wired power, thread the power cable through one
+of the mounting holes in the back of the case. This may require drilling a
+wider hole or cutting the connector off your cable and and splicing it back on.
 
-If you use battery power, connect it to its battery. If your safe uses 4 AAA (or AA) batteries, you can even power the raspberry pi from the safe's own batteries. The details on how to do this may vary by manufacture.
+If you use battery power, connect it to its battery. If your safe uses 4 AAA
+(or AA) batteries, you can even power the raspberry pi from the safe's own
+batteries. The details on how to do this may vary by manufacture.
 
 You can use the included command line utility to turn the relay on and off.
 Sometimes this is useful when troubleshooting. Run the command-line program
