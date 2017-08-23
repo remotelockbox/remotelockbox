@@ -2,7 +2,7 @@
 import datetime
 import logging
 import shelve
-from os import path
+import os
 
 from werkzeug import generate_password_hash, check_password_hash
 
@@ -19,15 +19,22 @@ class LockState:
             self.solenoid.open()
             self.last_locked = datetime.datetime.now()
             self.last_locked_by = user_id
-        logging.info('locked by %s', self.last_locked_by)
+            logging.info('locked by %s', self.last_locked_by)
 
     def unlock(self, user_id):
+        if self.is_locked() and not self.can_unlock(user_id):
+            logging.warn('%s could not unlock because it was last locked by %s', user_id, self.last_locked_by)
+            return
+
         self.solenoid.close()
         self.last_locked_by = user_id
         logging.info('unlocked by %s (last locked on %s)', self.last_locked_by, self.last_locked)
     
     def is_locked(self):
         return not self.solenoid.is_closed()
+
+    def can_unlock(self, user_id):
+        return self.last_locked_by == user_id or user_id == 'primary'
 
     def sync(self):
         """ re-apply solenoid state in case the hardware was
@@ -56,12 +63,19 @@ def get_user(id):
         if id == user.id:
             return user
 
-# Open database
-db = shelve.open('lock-settings', writeback=True)
+shelf = None
+lock_state = None
+users = None
 
-# Populate database if it is empty
-db.setdefault('lock_state', LockState())
-db.setdefault('users', [User('primary', '1234'), User('sub', '0000')])
+def init():
+    global shelf, lock_state, users
 
-lock_state = db['lock_state']
-users = db['users']
+    # Open database
+    shelf = shelve.open(os.getenv('LOCK_SETTINGS_PATH', 'lock-settings'), writeback=True)
+
+    # Populate database if it is empty
+    shelf.setdefault('lock_state', LockState())
+    shelf.setdefault('users', [User('primary', '1234'), User('sub', '0000')])
+
+    lock_state = shelf['lock_state']
+    users = shelf['users']

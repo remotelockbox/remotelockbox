@@ -2,7 +2,7 @@ from datetime import datetime
 import logging
 import threading
 import werkzeug.serving
-from db import db, lock_state
+import db
 
 timer = None
 
@@ -22,13 +22,13 @@ def _run():
     start()
 
 def check_expired():
-    if 'schedule_form' in db and 'unlock_date' in db['schedule_form']:
+    if 'schedule_form' in db.shelf and 'unlock_date' in shelf['schedule_form']:
         print("expired")
-        unlock_time = datetime.strptime(db['schedule_form']['unlock_date'], '%Y-%m-%d %H:%M')
+        unlock_time = datetime.strptime(shelf['schedule_form']['unlock_date'], '%Y-%m-%d %H:%M')
         if unlock_time <= datetime.now():
             logging.info("scheduled unlock (#s)".format(unlock_time))
-            lock_state.unlock(db['schedule_user_id'])
-            del db['schedule_form']
-            del db['schedule_user_id']
-            db.sync()
+            db.lock_state.unlock(shelf['schedule_user_id'])
+            del shelf['schedule_form']
+            del shelf['schedule_user_id']
+            shelf.sync()
 

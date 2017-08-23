@@ -9,7 +9,8 @@ from flask import Flask, flash, redirect, render_template, json, \
 import flask_login
 from flask_login import login_required
 
-from db import db, lock_state, get_user, users
+import db
+from db import get_user
 import forms
 import worker
 
@@ -60,7 +61,7 @@ def main():
 def login():
     pin = request.form['inputPassword']
     if pin:
-        for user in users:
+        for user in db.users:
             if user.check_pin(pin):
                 remember = 'remember' in request.form
                 flask_login.login_user(User.get(user.id), remember=remember)
@@ -72,7 +73,7 @@ def login():
 
     return render_template("index.html", error=error)
  
-@app.route("/signOut")
+@app.route("/logout")
 def logout():
     flask_login.logout_user()
     return redirect("/")
@@ -81,12 +82,12 @@ def logout():
 @login_required
 def show_config():
     form_data = None
-    if 'schedule_form' in db:
-        form_data = db['schedule_form']
+    if 'schedule_form' in db.shelf:
+        form_data = db.shelf['schedule_form']
 
     return render_template("config_form.html",
         now=datetime.datetime.now(),
-        lock=lock_state,
+        lock=db.lock_state,
         schedule_form = forms.ScheduleForm(form_data)
     )
 
@@ -97,48 +98,52 @@ def save_config():
     if not schedule_form.validate():
         return render_template("config_form.html",
             now=datetime.datetime.now(),
-            lock=lock_state,
+            lock=db.lock_state,
             schedule_form = schedule_form
         )
     try:
-        if current_user_id() != 'primary' and 'schedule_form' in db:
+        if current_user_id() != 'primary' and 'schedule_form' in db.shelf:
            flash("You can't change the schedule once it is set")
            return show_config()
     except KeyError:
         pass
 
     if request.form['unlock_date'] != '':
-        lock_state.lock(current_user_id())
+        db.lock_state.lock(current_user_id())
 
-    db['schedule_form'] = request.form
-    db['schedule_user_id'] = current_user_id()
-    db.sync()
-    logging.info('schedule updated to %s', list(db['schedule_form'].items()))
+    db.shelf['schedule_form'] = request.form
+    db.shelf['schedule_user_id'] = current_user_id()
+    db.shelf.sync()
+    logging.info('schedule updated to %s', list(db.shelf['schedule_form'].items()))
     return show_config()
 
 @app.route("/lock", methods=["POST"])
 @login_required
 def lock():
-    if lock_state.is_locked():
-        lock_state.sync()
+    if db.lock_state.is_locked():
+        db.lock_state.sync()
         flash("Already locked")
     else:
-        lock_state.lock(current_user_id())
+        db.lock_state.lock(current_user_id())
     
-    db.sync()
+    db.shelf.sync()
 
     return redirect("/config")
 
 @app.route("/unlock", methods=["POST"])
 @login_required
 def unlock():
-    if not lock_state.is_locked():
-        lock_state.sync()
+    if not db.lock_state.can_unlock(current_user_id()):
+        flash("You can't unlock the box because it was locked by someone else.")
+        return redirect("/config")
+
+    if not db.lock_state.is_locked():
+        db.lock_state.sync()
         flash("Already unlocked")
     else:
-        lock_state.unlock(current_user_id())
+        db.lock_state.unlock(current_user_id())
 
-    db.sync()
+    db.shelf.sync()
 
     return redirect("/config")
 
@@ -169,7 +174,9 @@ def save_profile():
 if __name__ == "__main__":
     loglevel = logging.DEBUG if app.debug else logging.WARN
     logging.basicConfig(format='%(asctime)s %(message)s', level=loglevel)
-    with closing(db):
+    db.init()
+
+    with closing(db.shelf):
         try:
             worker.start()
             app.run()
