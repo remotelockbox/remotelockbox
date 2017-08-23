@@ -50,6 +50,10 @@ The server will automatically restart when files change.
 
 The `debug` script does not operate your hardware by default.
 
+The included test suite simulates requests against the web application
+and checks that common usage scenarios work correctly. Run the tests
+with `python3 app_test.py`.
+
 ## Design
 
 This software is designed to control a relay using GPIO. It is built with

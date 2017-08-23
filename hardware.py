@@ -1,5 +1,6 @@
-import time
+import logging
 import os
+import time
 
 # When SIMULATE_HARDWARE is set, don't really do hardware IO
 use_gpio = 'SIMULATE_HARDWARE' not in os.environ
@@ -30,13 +31,13 @@ class SolenoidSwitch:
         self.closed = closed
 
     def open(self):
-        print("solenoid opened")
+        logging.debug("solenoid opened")
         if use_gpio:
             _relay.on()
         self.closed = False
 
     def close(self):
-        print("solenoid closed")
+        logging.debug("solenoid closed")
         if use_gpio:
             _relay.off()
         self.closed = True;
