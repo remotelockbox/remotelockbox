@@ -30,11 +30,22 @@
         <form class="form-schedule" method="POST">
         <div class="form-row">
             <div class="form-group">
-                {{ schedule_form.unlock_date(class='form_control', placeholder='Choose date') }}
+                {% set invalid_class = '' %}
+                {% if schedule_form.unlock_date.errors %}
+                {% set invalid_class = 'is-invalid' %}
+                {% endif %}
+
+                {{ schedule_form.unlock_date(class_='form_control ' + invalid_class, placeholder='Choose date') }}
+                {% if schedule_form.unlock_date.errors %}
+                {% for error in schedule_form.unlock_date.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+                {% endif %}
+
             </div>
         </div>
         <p>
-            <input type="submit" value="Lock">
+            <input type="submit" id="set_schedule" value="Lock">
             <input type="submit" id="clear_schedule" value="Clear">
         </p>
         <script>

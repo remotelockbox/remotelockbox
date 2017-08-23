@@ -93,6 +93,13 @@ def show_config():
 @app.route("/config", methods=["POST"])
 @login_required
 def save_config():
+    schedule_form = forms.ScheduleForm(request.form)
+    if not schedule_form.validate():
+        return render_template("config_form.html",
+            now=datetime.datetime.now(),
+            lock=lock_state,
+            schedule_form = schedule_form
+        )
     try:
         if current_user_id() != 'primary' and 'schedule_form' in db:
            flash("You can't change the schedule once it is set")

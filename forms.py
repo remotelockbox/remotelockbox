@@ -1,4 +1,4 @@
 from wtforms import *
 
 class ScheduleForm(Form):
-    unlock_date = StringField('Unlock on Date')
+    unlock_date = DateTimeField('Unlock on Date', format='%Y-%m-%d %H:%M')

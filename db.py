@@ -15,9 +15,10 @@ class LockState:
         self.last_locked = datetime.datetime.now()
 
     def lock(self, user_id):
-        self.solenoid.open()
-        self.last_locked = datetime.datetime.now()
-        self.last_locked_by = user_id
+        if self.solenoid.is_closed():
+            self.solenoid.open()
+            self.last_locked = datetime.datetime.now()
+            self.last_locked_by = user_id
         logging.info('locked by %s', self.last_locked_by)
 
     def unlock(self, user_id):
