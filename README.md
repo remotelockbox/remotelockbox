@@ -9,24 +9,53 @@ It is meant to be installed securely on an embedded computer inside the box.
 
 Set your time-zone by running `dpkg-reconfigure tzdata`.
 
+#### Raspberry Pi Installation
+
+Use the included `install` script to install this application
+and configure it to start on boot. This only works if you
+are logged in as the `pi` user.
+
+Check out this repository with git in your home directory and
+run the install script:
+
+    git clone https://github.com/remotelockbox/remotelockbox.git
+    cd remotelockbox
+    bin/install
+
+#### Advanced Manual Installation / Other Linux Distributions
+
 Install `python3` and `pip3`. On debian, raspbian, or ubuntu,
 run `apt install python3 python3-pip`.
 
 Execute `pip3 install -r requirements.txt` to install libraries
 required by this program.
 
-Allow access to GPIO pins:
+If you do not want to run as root, allow access to GPIO pins
+and make sure your user is a member of the gpio group.
 
-```
-sudo chown root.gpio /dev/gpiomem
-sudo chmod g+rw /dev/gpiomem
-```
+    sudo chown root.gpio /dev/gpiomem
+    sudo chmod g+rw /dev/gpiomem
 
-### Running the server
+Adapt the included systemd service file to your environment.
 
-Run the program by executing `./run`.
+### Running the server directly
+
+Normally, you shouldn't have to do this. But if you want to run the server in
+your shell without systemd, execute `python3 app.py`. This may be useful when
+modifying and testing the program. Run with the `--help` option to see
+available command-line options.
 
 A database called `lock-settings.db` will be created in the current directory.
+
+## Using the remotelockbox
+
+Use your web browser to connect to the raspberry pi.
+
+You can find your device's address by running `ip addr`. If your raspberry pi
+is wired, usee the `eth0` address. Otherwise, use the address for `wlan0` or
+similarly named interface for a wifi connection. Network configuration is not
+covered by this document.  Please refer to the Raspberry Pi website for
+information about configuring wifi.
 
 The lock box supports up to two users. The primary user has full control
 of the box at all times. The secondary user (the 'sub' user), can control
@@ -45,7 +74,7 @@ that may require physical access inside the lock box. Be careful!
 
 ## Development
 
-During development, run the `./debug` script to start in debug mode.
+During development, run the `bin/debug` script to start in debug mode.
 The server will automatically restart when files change.
 
 The `debug` script does not operate your hardware by default.

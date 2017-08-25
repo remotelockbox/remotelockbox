@@ -3,6 +3,7 @@
 from contextlib import closing
 import datetime
 import logging
+import argparse
 
 from flask import Flask, flash, redirect, render_template, json, \
         request, url_for
@@ -171,14 +172,28 @@ def save_profile():
 
     return render_template("profile.html", error=error)
 
+
 if __name__ == "__main__":
-    loglevel = logging.DEBUG if app.debug else logging.WARN
+
+    parser = argparse.ArgumentParser(prog='remotelockbox',
+                                     description='Remote Lock Box')
+    parser.add_argument("-H", "--host", default='127.0.0.1')
+    parser.add_argument("-P", "--port", type=int, default='5000')
+    parser.add_argument("-d", "--debug", action="store_true")
+
+    options = parser.parse_args()
+
+    loglevel = logging.DEBUG if options.debug else logging.WARN
     logging.basicConfig(format='%(asctime)s %(message)s', level=loglevel)
+
     db.init()
 
     with closing(db.shelf):
         try:
             worker.start()
-            app.run()
+            app.run(
+                    debug=options.debug,
+                    host=options.host,
+                    port=options.port)
         finally:
             worker.stop()

@@ -4,5 +4,4 @@
 # Useful for development on systems that don't support gpio.
 export SIMULATE_HARDWARE=
 
-export FLASK_DEBUG=1
-python3 app.py
+python3 app.py --debug
