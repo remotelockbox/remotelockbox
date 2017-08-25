@@ -93,7 +93,7 @@ the Raspberry Pi in mind but other hardware will also work.
 #### Required Parts
 
  - A tiny linux-based computer with WiFi such as the Raspberry Pi Zero W
- - power supply or battery power for the computer
+ - Micro-USB power supply
  - A relay circuit
  - Electronic security box with a keypad that can be removed from the inside.
 
@@ -124,16 +124,12 @@ solenoid and the control board.
 
 Now connect the relay's 5v control pins to your raspberry pi.
 
-Load this software onto the raspberry pi and run it. Test that it is accessible
-over your WiFi network (or plug it in via Ethernet if needed).
+Load this software onto the raspberry pi and run it. Test that it is
+accessible over your WiFi network (or plug it in via Ethernet if needed).
 
-If your raspberry pi requires wired power, thread the power cable through one
-of the mounting holes in the back of the case. This may require drilling a
-wider hole or cutting the connector off your cable and and splicing it back on.
-
-If you use battery power, connect it to its battery. If your safe uses 4 AAA
-(or AA) batteries, you can even power the raspberry pi from the safe's own
-batteries. The details on how to do this may vary by manufacture.
+Thread the power cable through one of the mounting holes in the back of
+the case. This may require drilling a wider hole or cutting the connector
+off your cable and and splicing it back on.
 
 You can use the included command line utility to turn the relay on and off.
 Sometimes this is useful when troubleshooting. Run the command-line program
