@@ -14,4 +14,5 @@ sudo chmod g+rw /dev/gpiomem
 sudo cp remotelockbox.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable remotelockbox.service
+sudo systemctl start remotelockbox.service
 
