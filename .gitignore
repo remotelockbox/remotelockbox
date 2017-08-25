@@ -1,2 +1,3 @@
-/lock-settings.db
+/lock-settings*
+/test-settings*
 __pycache__
