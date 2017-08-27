@@ -1,9 +1,18 @@
 # Remote Lock Box
 
-A web-server that controls an electronic lockbox.
-It is meant to be installed securely on an embedded computer inside the box.
+Have you ever wanted to lock something away for hours or days at a time?
+Would you like to set a timer to make it inaccessible?
+Or would you rather give up control of your lock box to someone who
+might not be nearby to open it for you?
 
-## Installation
+This project is a web-server that controls an electronic lockbox.
+It is meant to be installed securely on an embedded computer inside the box
+and provides access controls for one or two parties.
+
+To get started, you need an inexpensive digital safe, a raspberry-pi
+computer (or similar), an electronic relay, and this software.
+
+## Software Installation
 
 ### Setting up your system
 
