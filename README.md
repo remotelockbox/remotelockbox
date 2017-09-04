@@ -12,11 +12,22 @@ and provides access controls for one or two parties.
 To get started, you need an inexpensive digital safe, a raspberry-pi
 computer (or similar), an electronic relay, and this software.
 
+### Uses
+
+This software can control a lock box or any other electronic device remotely.
+This means it has many possible uses:
+
+ - restrict access to a key by locking it inside a lock box
+ - hand over control of a key to a partner
+ - remotely control an electromagnet
+ - control access to a electronic door lock
+
 ## Software Installation
 
 ### Setting up your system
 
-Set your time-zone by running `dpkg-reconfigure tzdata`.
+First, set your time-zone by running `dpkg-reconfigure tzdata`.
+All times in the application will be in your configured time-zone.
 
 #### Raspberry Pi Installation
 
@@ -46,15 +57,6 @@ and make sure your user is a member of the gpio group.
     sudo chmod g+rw /dev/gpiomem
 
 Adapt the included systemd service file to your environment.
-
-### Running the server directly
-
-Normally, you shouldn't have to do this. But if you want to run the server in
-your shell without systemd, execute `python3 app.py`. This may be useful when
-modifying and testing the program. Run with the `--help` option to see
-available command-line options.
-
-A database called `lock-settings.db` will be created in the current directory.
 
 ## Using the remotelockbox
 
@@ -92,6 +94,15 @@ The included test suite simulates requests against the web application
 and checks that common usage scenarios work correctly. Run the tests
 with `python3 app_test.py`.
 
+### Running the server directly
+
+Normally, you shouldn't have to do this. But if you want to run the server in
+your shell without systemd, execute `python3 app.py`. This may be useful when
+modifying and testing the program. Run with the `--help` option to see
+available command-line options.
+
+A database called `lock-settings.db` will be created in the current directory.
+
 ## Design
 
 This software is designed to control a relay using GPIO. It is built with
@@ -103,7 +114,7 @@ the Raspberry Pi in mind but other hardware will also work.
 
  - A tiny linux-based computer with WiFi such as the Raspberry Pi Zero W
  - Micro-USB power supply
- - A relay circuit
+ - A relay circuit (or a MOSFET power controller circuit)
  - Electronic security box with a keypad that can be removed from the inside.
 
 All of these parts can be acquired for under 100 USD.
@@ -111,9 +122,12 @@ All of these parts can be acquired for under 100 USD.
 You may also need miscellaneous items for interacting with the computer during
 setup (keyboard, monitor, sd-card reader, etc.).
 
-Purchase or build a relay circuit.
+Purchase a relay circuit or a MOSFET power controller. In either case, you
+must install a flyback diode if your circuit does not already include one.
+
 There is an inexpensive kit that requires assembly and soldering at
 [Sparkfun](https://www.sparkfun.com/products/13815).
+It includes a flyback diode.
 
 Search for a "Digital Electronic Safe Box" on Amazon or Ebay. You will notice
 that most of them have the same controls on the front. You want any one of
@@ -121,8 +135,11 @@ these.
 
 #### Installation Steps
 
-Set a very short and simple PIN on the keypad. Since the keypad only works when
-this software allows it, you need it to be convenient, not secure.
+These steps walk through installing the hardware inside of
+an electronic safe box.
+
+Set a very short and simple combination on the keypad. Since the keypad only
+works when this software allows it, you need it to be convenient, not secure.
 
 On the inside of the door, unscrew the panel that contains the electronics and
 hardware. You need to cut one wire going from the control board to the solenoid
