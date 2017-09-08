@@ -1,12 +1,10 @@
- #!/usr/bin/python3
-
 from contextlib import closing
 import datetime
 import logging
 import argparse
 
 from flask import Flask, flash, redirect, render_template, json, \
-        request, url_for
+    request, url_for
 import flask_login
 from flask_login import login_required
 
@@ -22,8 +20,10 @@ app.secret_key = 'foobar'
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
+
 def current_user_id():
-     return flask_login.current_user.get_id()
+    return flask_login.current_user.get_id()
+
 
 class User:
     @staticmethod
@@ -45,9 +45,11 @@ class User:
     def get_id(self):
         return self.user_id
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.get(user_id)
+
 
 # Routes
 
@@ -57,6 +59,7 @@ def main():
         return render_template("index.html")
     else:
         return redirect("/config")
+
 
 @app.route("/", methods=["POST"])
 def login():
@@ -73,11 +76,13 @@ def login():
         error = "You must fill in the PIN to log in"
 
     return render_template("index.html", error=error)
- 
+
+
 @app.route("/logout")
 def logout():
     flask_login.logout_user()
     return redirect("/")
+
 
 @app.route("/config")
 @login_required
@@ -87,10 +92,11 @@ def show_config():
         form_data = db.shelf['schedule_form']
 
     return render_template("config_form.html",
-        now=datetime.datetime.now(),
-        lock=db.lock_state,
-        schedule_form = forms.ScheduleForm(form_data)
-    )
+                           now=datetime.datetime.now(),
+                           lock=db.lock_state,
+                           schedule_form=forms.ScheduleForm(form_data)
+                           )
+
 
 @app.route("/config", methods=["POST"])
 @login_required
@@ -98,14 +104,14 @@ def save_config():
     schedule_form = forms.ScheduleForm(request.form)
     if not schedule_form.validate():
         return render_template("config_form.html",
-            now=datetime.datetime.now(),
-            lock=db.lock_state,
-            schedule_form = schedule_form
-        )
+                               now=datetime.datetime.now(),
+                               lock=db.lock_state,
+                               schedule_form=schedule_form
+                               )
     try:
         if current_user_id() != 'primary' and 'schedule_form' in db.shelf:
-           flash("You can't change the schedule once it is set")
-           return show_config()
+            flash("You can't change the schedule once it is set")
+            return show_config()
     except KeyError:
         pass
 
@@ -118,6 +124,7 @@ def save_config():
     logging.info('schedule updated to %s', list(db.shelf['schedule_form'].items()))
     return show_config()
 
+
 @app.route("/lock", methods=["POST"])
 @login_required
 def lock():
@@ -126,10 +133,11 @@ def lock():
         flash("Already locked")
     else:
         db.lock_state.lock(current_user_id())
-    
+
     db.shelf.sync()
 
     return redirect("/config")
+
 
 @app.route("/unlock", methods=["POST"])
 @login_required
@@ -148,10 +156,12 @@ def unlock():
 
     return redirect("/config")
 
+
 @app.route("/profile")
 @login_required
 def show_profile():
     return render_template("profile.html")
+
 
 @app.route("/profile", methods=["POST"])
 @login_required
@@ -192,8 +202,8 @@ if __name__ == "__main__":
         try:
             worker.start()
             app.run(
-                    debug=options.debug,
-                    host=options.host,
-                    port=options.port)
+                debug=options.debug,
+                host=options.host,
+                port=options.port)
         finally:
             worker.stop()

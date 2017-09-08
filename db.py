@@ -1,4 +1,3 @@
-
 import datetime
 import logging
 import shelve
@@ -7,6 +6,7 @@ import os
 from werkzeug import generate_password_hash, check_password_hash
 
 import hardware
+
 
 class LockState:
     def __init__(self):
@@ -23,13 +23,13 @@ class LockState:
 
     def unlock(self, user_id):
         if self.is_locked() and not self.can_unlock(user_id):
-            logging.warn('%s could not unlock because it was last locked by %s', user_id, self.last_locked_by)
+            logging.warning('%s could not unlock because it was last locked by %s', user_id, self.last_locked_by)
             return
 
         self.solenoid.close()
         self.last_locked_by = user_id
         logging.info('unlocked by %s (last locked on %s)', self.last_locked_by, self.last_locked)
-    
+
     def is_locked(self):
         return not self.solenoid.is_closed()
 
@@ -46,9 +46,11 @@ class LockState:
             self.solenoid.open()
         logging.info('syncing solenoid state (closed=%s)', self.solenoid.closed)
 
+
 class User:
-    def __init__(self, id, pin=None):
-        self.id = id
+    def __init__(self, user_id, pin=None):
+        self.id = user_id
+        self.pin_hash = None
         if pin:
             self.set_pin(pin)
 
@@ -58,14 +60,17 @@ class User:
     def check_pin(self, pin):
         return check_password_hash(self.pin_hash, pin)
 
-def get_user(id):
+
+def get_user(user_id):
     for user in users:
-        if id == user.id:
+        if user_id == user.id:
             return user
+
 
 shelf = None
 lock_state = None
-users = None
+users = []
+
 
 def init():
     global shelf, lock_state, users

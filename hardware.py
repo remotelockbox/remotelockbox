@@ -1,6 +1,5 @@
 import logging
 import os
-import time
 
 # When SIMULATE_HARDWARE is set, don't really do hardware IO
 use_gpio = 'SIMULATE_HARDWARE' not in os.environ
@@ -18,13 +17,15 @@ use_gpio = 'SIMULATE_HARDWARE' not in os.environ
 #
 # This setting MUST match the wiring of your relay.
 # Otherwise the meaning of locked and unlocked will be reversed!
-relay_nc=False
+relay_nc = False
 
-relay_pin = 17 # GP17, pin #11
+relay_pin = 17  # GP17, pin #11
 
 if use_gpio:
     import gpiozero
+
     _relay = gpiozero.DigitalOutputDevice(relay_pin, active_high=relay_nc)
+
 
 class SolenoidSwitch:
     def __init__(self, closed=True):
@@ -40,13 +41,15 @@ class SolenoidSwitch:
         logging.debug("solenoid closed")
         if use_gpio:
             _relay.off()
-        self.closed = True;
-    
+        self.closed = True
+
     def is_closed(self):
         return self.closed
 
+
 if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser(description='directly control lockbox hardware')
     parser.add_argument('command', choices=['open', 'close'])
     args = parser.parse_args()
@@ -58,4 +61,3 @@ if __name__ == "__main__":
         switch.close()
     else:
         raise Exception("unknown command")
-

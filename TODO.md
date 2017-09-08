@@ -21,7 +21,7 @@ An issue tracker may supersede this file in the future.
 - Hardware assembly tutorial
 
 ## Proposed Ideas
-- Use accordian to collapse cards, put their state in ther headings
+- Use accordion to collapse cards, put their state in their headings
 - Create optional cloud service to ease web access through NAT and add social features:
     - more advanced delegation of control
     - embeddable status image
