@@ -5,6 +5,8 @@ An issue tracker may supersede this file in the future.
 
 ## Bugs
 
+- since we don't power the relay pin by default, initialize the lock state as locked by sub
+- set lock pin to what's set in the database at startup
 
 ## Features
 - Add random date-range card
