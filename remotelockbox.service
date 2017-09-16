@@ -4,7 +4,7 @@ After=multi-user.target
 
 [Service]
 Type=idle
-ExecStart=/usr/bin/python3 /home/pi/remotelockbox/app.py --host 0.0.0.0
+ExecStart=/usr/bin/python3 /home/pi/remotelockbox/app.py --host 0.0.0.0 --port 80
 Restart=on-failure
 WorkingDirectory=/home/pi/remotelockbox
 

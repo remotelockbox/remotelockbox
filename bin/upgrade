@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -ex
+
+# install dependencies
+sudo pip3 install -r requirements.txt
+
+# set up systemd
+sudo systemctl stop remotelockbox.service
+sudo cp remotelockbox.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable remotelockbox.service
+sudo systemctl start remotelockbox.service
+
