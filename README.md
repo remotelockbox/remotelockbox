@@ -112,7 +112,7 @@ the Raspberry Pi in mind but other hardware will also work.
 
 #### Required Parts
 
- - A tiny linux-based computer with WiFi such as the Raspberry Pi Zero W
+ - A tiny computer with WiFi and GPIO such as the Raspberry Pi Zero W
  - Micro-USB power supply
  - A relay circuit (or a MOSFET power controller circuit)
  - Electronic security box with a keypad that can be removed from the inside.

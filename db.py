@@ -3,7 +3,7 @@ import logging
 import shelve
 import os
 
-from werkzeug import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 import hardware
 
