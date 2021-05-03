@@ -88,8 +88,8 @@ def logout():
 @login_required
 def show_config():
     form_data = None
-    if 'schedule_form' in db.shelf:
-        form_data = db.shelf['schedule_form']
+    if db.schedule_form:
+        form_data = db.schedule_form
 
     return render_template("config_form.html",
                            now=datetime.datetime.now(),
@@ -109,7 +109,7 @@ def save_config():
                                schedule_form=schedule_form
                                )
     try:
-        if current_user_id() != 'primary' and 'schedule_form' in db.shelf:
+        if current_user_id() != 'primary' and db.schedule_form:
             flash("You can't change the schedule once it is set")
             return show_config()
     except KeyError:
@@ -118,10 +118,10 @@ def save_config():
     if request.form['unlock_date'] != '':
         db.lock_state.lock(current_user_id())
 
-    db.shelf['schedule_form'] = request.form
-    db.shelf['schedule_user_id'] = current_user_id()
-    db.shelf.sync()
-    logging.info('schedule updated to %s', list(db.shelf['schedule_form'].items()))
+    db.schedule_form = request.form
+    db.schedule_user_id = current_user_id()
+    db.save()
+    logging.info('schedule updated to %s', list(db.schedule_form.items()))
     return show_config()
 
 
@@ -134,7 +134,7 @@ def lock():
     else:
         db.lock_state.lock(current_user_id())
 
-    db.shelf.sync()
+    db.save()
 
     return redirect("/config")
 
@@ -152,7 +152,7 @@ def unlock():
     else:
         db.lock_state.unlock(current_user_id())
 
-    db.shelf.sync()
+    db.save()
 
     return redirect("/config")
 
@@ -196,14 +196,13 @@ if __name__ == "__main__":
     loglevel = logging.DEBUG if options.debug else logging.WARN
     logging.basicConfig(format='%(asctime)s %(message)s', level=loglevel)
 
-    db.init()
+    db.read()
 
-    with closing(db.shelf):
-        try:
-            worker.start()
-            app.run(
-                debug=options.debug,
-                host=options.host,
-                port=options.port)
-        finally:
-            worker.stop()
+    try:
+        worker.start()
+        app.run(
+            debug=options.debug,
+            host=options.host,
+            port=options.port)
+    finally:
+        worker.stop()

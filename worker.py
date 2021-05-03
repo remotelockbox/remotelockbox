@@ -26,11 +26,11 @@ def _run():
 
 
 def check_expired():
-    if 'schedule_form' in db.shelf and 'unlock_date' in db.shelf['schedule_form']:
-        unlock_time = datetime.strptime(db.shelf['schedule_form']['unlock_date'], '%Y-%m-%d %H:%M')
+    if db.schedule_form and 'unlock_date' in db.schedule_form:
+        unlock_time = datetime.strptime(db.schedule_form['unlock_date'], '%Y-%m-%d %H:%M')
         if unlock_time <= datetime.now():
             logging.info("scheduled unlock (#s)".format(unlock_time))
-            db.lock_state.unlock(db.shelf['schedule_user_id'])
-            del db.shelf['schedule_form']
-            del db.shelf['schedule_user_id']
-            db.shelf.sync()
+            db.lock_state.unlock(db.schedule_user_id)
+            db.schedule_form = None
+            db.schedule_user_id = None
+            db.save()

@@ -67,20 +67,34 @@ def get_user(user_id):
             return user
 
 
-shelf = None
 lock_state = None
 users = []
+schedule_form = None
+schedule_user_id = None
 
 
-def init():
-    global shelf, lock_state, users
+def _open():
+    return shelve.open(os.getenv('LOCK_SETTINGS_PATH', 'lock-settings'), writeback=True)
 
-    # Open database
-    shelf = shelve.open(os.getenv('LOCK_SETTINGS_PATH', 'lock-settings'), writeback=True)
 
-    # Populate database if it is empty
-    shelf.setdefault('lock_state', LockState())
-    shelf.setdefault('users', [User('primary', '1234'), User('sub', '0000')])
+def read():
+    global lock_state, users, schedule_form, schedule_user_id
 
-    lock_state = shelf['lock_state']
-    users = shelf['users']
+    with _open() as shelf:
+        lock_state = shelf.get('lock_state', LockState())
+        users = shelf.get('users', [User('primary', '1234'), User('sub', '0000')])
+        schedule_form = shelf.get('schedule_form')
+        schedule_user_id = shelf.get('schedule_user_id')
+
+
+def save():
+    with _open() as shelf:
+        shelf['lock_state'] = lock_state
+        shelf['users'] = users
+        shelf['schedule_form'] = schedule_form
+        shelf['schedule_user_id'] = schedule_user_id
+
+
+def clear():
+    with _open() as shelf:
+        shelf.clear()

@@ -15,11 +15,8 @@ class AppTestCase(unittest.TestCase):
     def setUp(self):
         app.testing = True
         self.app = app.test_client()
-        db.init()
-        db.shelf.clear()
-
-    def tearDown(self):
-        db.shelf.close()
+        db.read()
+        db.clear()
 
     def test_empty_db(self):
         rv = self.app.get('/')
